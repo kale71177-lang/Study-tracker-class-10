@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ಸಿಬಿಎಸ್‌ಇ ಸಿಲಬಸ್ ಟ್ರ್ಯಾಕರ್</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --badge-bg: #eef2ff;
+            --date-badge-bg: #f3f4f6;
+            --hover-bg: #f9fafb;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ಡಾರ್ಕ್ ಮೋಡ್ ಥೀಮ್ (Dark Theme Variables) */
+        body.dark-mode {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --badge-bg: #312e81;
+            --date-badge-bg: #334155;
+            --hover-bg: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ಡಾರ್ಕ್ ಮೋಡ್ ಟಾಗಲ್ ಬಟನ್ */
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        .overall-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .overall-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-bg {
+            background-color: var(--border-color);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--accent-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-secondary);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .subject-overview {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+
+        .add-chapter-box {
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .add-chapter-box h4 {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-row input, .form-row button {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .form-row input {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .form-row button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .form-row button:hover {
+            background: var(--accent-hover);
+        }
+
+        .chapter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chapter-item {
+            background: var(--card-bg);
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .chapter-item:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .chapter-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .chapter-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .chapter-title {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .chapter-item.completed .chapter-title {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .meta-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .book-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            background: var(--badge-bg);
+            color: var(--accent-color);
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        body.dark-mode .book-badge {
+            color: #818cf8;
+        }
+
+        .date-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            background: var(--date-badge-bg);
+            color: var(--text-secondary);
+            border-radius: 12px;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0 4px;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 24px auto 0;
+            background: transparent;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .reset-btn:hover {
+            background: var(--danger-color);
+            color: #ffffff;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding-top: 40px;
+            }
+            .theme-toggle {
+                top: 0;
+                right: 50%;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="theme-icon">🌙</span> <span id="theme-text">ಡಾರ್ಕ್ ಮೋಡ್</span>
+        </button>
+        <h1>ಸಿಬಿಎಸ್‌ಇ ಸಿಲಬಸ್ ಟ್ರ್ಯಾಕರ್</h1>
+        <p>ನಿಮ್ಮ ವಿಷಯಗಳ ತಯಾರಿ ಮತ್ತು ಗುರಿ ದಿನಾಂಕಗಳನ್ನು ನಿರ್ವಹಿಸಿ</p>
+    </header>
+
+    <div class="overall-card">
+        <div class="overall-header">
+            <h2>ಒಟ್ಟು ಬೋರ್ಡ್ ತಯಾರಿ</h2>
+            <span id="overall-percentage" style="font-weight: bold; color: var(--accent-color);">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div id="overall-progress-bar" class="progress-bar-fill"></div>
+        </div>
+    </div>
+
+    <div class="tabs" id="tabs-container"></div>
+    <div id="contents-container"></div>
+
+    <button class="reset-btn" onclick="resetProgress()">ಎಲ್ಲಾ ಪ್ರಗತಿಯನ್ನು ಮರುಹೊಂದಿಸಿ (Reset)</button>
+
+    <script>
+        const defaultData = [
+            {
+                id: "hindi",
+                name: "ಹಿಂದಿ (Hindi)",
+                chapters: [
+                    { id: "h1", book: "क्षितिज", title: "पद (सूरदास)", targetDate: "" },
+                    { id: "h2", book: "क्षितिज", title: "नेताजी का चश्मा", targetDate: "" }
+                ]
+            },
+            {
+                id: "english",
+                name: "ಇಂಗ್ಲಿಷ್ (English)",
+                chapters: [
+                    { id: "e1", book: "First Flight", title: "A Letter to God", targetDate: "" },
+                    { id: "e2", book: "First Flight", title: "Nelson Mandela", targetDate: "" }
+                ]
+            },
+            {
+                id: "science",
+                name: "ವಿಜ್ಞಾನ (Science)",
+                chapters: [
+                    { id: "s1", book: "Chemistry", title: "Chemical Reactions", targetDate: "" },
+                    { id: "s2", book: "Biology", title: "Life Processes", targetDate: "" }
+                ]
+            },
+            {
+                id: "maths",
+                name: "ಗಣಿತ (Maths)",
+                chapters: [
+                    { id: "m1", book: "Maths", title: "Real Numbers", targetDate: "" },
+                    { id: "m2", book: "Maths", title: "Polynomials", targetDate: "" }
+                ]
+            },
+            {
+                id: "social",
+                name: "ಸಾಮಾಜಿಕ ವಿಜ್ಞಾನ (Social Science)",
+                chapters: [
+                    { id: "sst1", book: "ಇತಿಹಾಸ", title: "The Rise of Nationalism in Europe", targetDate: "" },
+                    { id: "sst2", book: "ಇತಿಹಾಸ", title: "Nationalism in India", targetDate: "" },
+                    { id: "sst3", book: "ಭೂಗೋಳ", title: "Resources and Development", targetDate: "" },
+                    { id: "sst4", book: "ರಾಜ್ಯಶಾಸ್ತ್ರ", title: "Power Sharing", targetDate: "" },
+                    { id: "sst5", book: "ಅರ್ಥಶಾಸ್ತ್ರ", title: "Development", targetDate: "" }
+                ]
+            }
+        ];
+
+        let userProgress = JSON.parse(localStorage.getItem('cbse_progress')) || {};
+        let customChapters = JSON.parse(localStorage.getItem('cbse_custom_chapters')) || {};
+        let isDarkMode = JSON.parse(localStorage.getItem('cbse_dark_mode')) || false;
+
+        function applyTheme() {
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-icon').innerText = '☀️';
+                document.getElementById('theme-text').innerText = 'ಲೈಟ್ ಮೋಡ್';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('theme-icon').innerText = '🌙';
+                document.getElementById('theme-text').innerText = 'ಡಾರ್ಕ್ ಮೋಡ್';
+            }
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('cbse_dark_mode', JSON.stringify(isDarkMode));
+            applyTheme();
+        }
+
+        function saveData() {
+            localStorage.setItem('cbse_progress', JSON.stringify(userProgress));
+            localStorage.setItem('cbse_custom_chapters', JSON.stringify(customChapters));
+        }
+
+        function toggleChapter(chapterId) {
+            userProgress[chapterId] = !userProgress[chapterId];
+            saveData();
+            render();
+        }
+
+        function addChapter(subjectId) {
+            const titleInput = document.getElementById(`title-${subjectId}`);
+            const bookInput = document.getElementById(`book-${subjectId}`);
+            const dateInput = document.getElementById(`date-${subjectId}`);
+
+            const title = titleInput.value.trim();
+            const book = bookInput.value.trim() || "ಸಾಮಾನ್ಯ";
+            const targetDate = dateInput.value;
+
+            if (!title) {
+                alert("ದಯವಿಟ್ಟು ಅಧ್ಯಾಯದ ಹೆಸರನ್ನು ನಮೂದಿಸಿ.");
+                return;
+            }
+
+            const newId = 'custom_' + Date.now();
+            if (!customChapters[subjectId]) {
+                customChapters[subjectId] = [];
+            }
+
+            customChapters[subjectId].push({
+                id: newId,
+                book: book,
+                title: title,
+                targetDate: targetDate
+            });
+
+            titleInput.value = '';
+            bookInput.value = '';
+            dateInput.value = '';
+
+            saveData();
+            render();
+        }
+
+        function deleteChapter(subjectId, chapterId) {
+            if (confirm("ಈ ಅಧ್ಯಾಯವನ್ನು ಅಳಿಸಲು ಬಯಸುತ್ತೀರಾ?")) {
+                customChapters[subjectId] = customChapters[subjectId].filter(ch => ch.id !== chapterId);
+                delete userProgress[chapterId];
+                saveData();
+                render();
+            }
+        }
+
+        function resetProgress() {
+            if (confirm("ಎಲ್ಲಾ ಪ್ರಗತಿ ಮತ್ತು ಕಸ್ಟಮ್ ಅಧ್ಯಾಯಗಳನ್ನು ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತೀರಾ?")) {
+                userProgress = {};
+                customChapters = {};
+                saveData();
+                render();
+            }
+        }
+
+        function switchTab(subjectId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            document.getElementById(`tab-btn-${subjectId}`).classList.add('active');
+            document.getElementById(`tab-content-${subjectId}`).classList.add('active');
+        }
+
+        function render() {
+            const tabsContainer = document.getElementById('tabs-container');
+            const contentsContainer = document.getElementById('contents-container');
+
+            let totalChapters = 0;
+            let completedChapters = 0;
+
+            const activeTabId = document.querySelector('.tab-btn.active')?.dataset.id || defaultData[0].id;
+
+            tabsContainer.innerHTML = '';
+            contentsContainer.innerHTML = '';
+
+            defaultData.forEach((subject) => {
+                const subjectCustoms = customChapters[subject.id] || [];
+                const allSubjectChapters = [...subject.chapters, ...subjectCustoms];
+                
+                const subTotal = allSubjectChapters.length;
+                let subCompleted = 0;
+
+                allSubjectChapters.forEach(ch => {
+                    totalChapters++;
+                    if (userProgress[ch.id]) {
+                        completedChapters++;
+                        subCompleted++;
+                    }
+                });
+
+                const subPct = subTotal === 0 ? 0 : Math.round((subCompleted / subTotal) * 100);
+
+                // Tab Button
+                const tabBtn = document.createElement('button');
+                tabBtn.className = `tab-btn ${subject.id === activeTabId ? 'active' : ''}`;
+                tabBtn.id = `tab-btn-${subject.id}`;
+                tabBtn.dataset.id = subject.id;
+                tabBtn.innerText = subject.name;
+                tabBtn.onclick = () => switchTab(subject.id);
+                tabsContainer.appendChild(tabBtn);
+
+                // Tab Content
+                const contentDiv = document.createElement('div');
+                contentDiv.className = `tab-content ${subject.id === activeTabId ? 'active' : ''}`;
+                contentDiv.id = `tab-content-${subject.id}`;
+
+                let chapterItemsHTML = allSubjectChapters.map(ch => {
+                    const isDone = !!userProgress[ch.id];
+                    const isCustom = ch.id.startsWith('custom_');
+                    const dateStr = ch.targetDate ? `ಗುರಿ: ${ch.targetDate}` : 'ದಿನಾಂಕವಿಲ್ಲ';
+                    
+                    return `
+                        <div class="chapter-item ${isDone ? 'completed' : ''}">
+                            <div class="chapter-info" onclick="toggleChapter('${ch.id}')" style="cursor: pointer;">
+                                <input type="checkbox" ${isDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleChapter('${ch.id}')">
+                                <span class="chapter-title">${ch.title}</span>
+                            </div>
+                            <div class="meta-info">
+                                <span class="book-badge">${ch.book}</span>
+                                <span class="date-badge">${dateStr}</span>
+                                ${isCustom ? `<button class="delete-btn" onclick="deleteChapter('${subject.id}', '${ch.id}')" title="ಅಳಿಸು">×</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                contentDiv.innerHTML = `
+                    <div class="subject-overview">
+                        <div>
+                            <h3>${subject.name} ಪ್ರಗತಿ</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem;">${subCompleted} / ${subTotal} ಪೂರ್ಣಗೊಂಡಿದೆ</p>
+                        </div>
+                        <span style="font-weight: bold; font-size: 1.1rem; color: var(--accent-color);">${subPct}%</span>
+                    </div>
+
+                    <div class="add-chapter-box">
+                        <h4>ಹೊಸ ಅಧ್ಯಾಯವನ್ನು ಸೇರಿಸಿ</h4>
+                        <div class="form-row">
+                            <input type="text" id="title-${subject.id}" placeholder="ಅಧ್ಯಾಯದ ಹೆಸರು">
+                            <input type="text" id="book-${subject.id}" placeholder="ವಿಭಾಗ/ಪುಸ್ತಕ (ಉದಾ: ಇತಿಹಾಸ)">
+                            <input type="date" id="date-${subject.id}">
+                            <button onclick="addChapter('${subject.id}')">ಸೇರಿಸಿ</button>
+                        </div>
+                    </div>
+
+                    <div class="chapter-list">${chapterItemsHTML || '<p style="color: var(--text-secondary); text-align: center; padding: 10px;">ಯಾವ ಅಧ್ಯಾಯಗಳಿಲ್ಲ</p>'}</div>
+                `;
+
+                contentsContainer.appendChild(contentDiv);
+            });
+
+            const overallPct = totalChapters === 0 ? 0 : Math.round((completedChapters / totalChapters) * 100);
+            document.getElementById('overall-percentage').innerText = `${overallPct}%`;
+            document.getElementById('overall-progress-bar').style.width = `${overallPct}%`;
+        }
+
+        // ಪ್ರಾರಂಭಿಕ ಸೆಟಪ್
+        applyTheme();
+        render();
+    </script>
+</body>
+</html>
